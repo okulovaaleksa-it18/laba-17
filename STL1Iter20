@@ -1,0 +1,65 @@
+// STL1Iter20. Дана строка name и целое число N (1 ≤ N ≤ 26).
+// Записать в текстовый файл с именем name N начальных прописных букв латинского алфавита.
+// Использовать алгоритм generate_n.
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <algorithm>
+#include <iterator>
+
+using namespace std;
+
+//проверка, является ли переданная строка числом от 1 до 26
+bool IsValidNumber(const string& str) {
+    if (str.empty() || str.length() > 2) return false;
+    for (char c : str) {
+        if (!isdigit(c)) return false;
+    }
+    int num = stoi(str);
+    return (num >= 1 && num <= 26);
+}
+
+//функция-генератор символов латинского алфавита
+class AlphabetGenerator {
+private:
+    char current;
+public:
+    AlphabetGenerator() : current('a') {}
+    char operator()() { return current++; }
+};
+
+// генерирует N первых букв латинского алфавита и записывает их в файл
+void generateLettersToFile(const string& filename, int N) {
+    ofstream file(filename);
+    if (!file) { // Проверяем, удалось ли открыть файл.
+        cout << " Не удалось открыть файл для записи!";
+        exit(0);
+    }
+
+    generate_n(ostream_iterator<char>(file, " "), N, AlphabetGenerator());
+    file.close();
+    cout << " Данные успешно записаны в файл: " << filename << endl;
+}
+
+int main() {
+    setlocale(LC_ALL, "ru");
+
+    string filename;
+    cout << " Введите имя файла: ";
+    cin >> filename;
+
+    string input;
+    cout << " Введите количество букв (1-26): ";
+    cin >> input;
+
+    if (!IsValidNumber(input)) {
+        cout << " Недопустимое значение.";
+        return 0;
+    }
+
+    int N = stoi(input);
+    generateLettersToFile(filename, N);
+
+    return 0;
+}
