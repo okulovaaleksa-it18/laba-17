@@ -1,0 +1,177 @@
+//STL2Seq4.Дан набор целых чисел с четным количеством элементов.Заполнить дек D
+//исходными числами и вывести первую половину элементов дека D в обратном порядке, а
+//затем — вторую половину(также в обратном порядке).
+
+#include <iostream>
+#include <deque>
+#include <vector>
+#include <fstream>
+#include <iterator>
+#include <string>
+#include <ctime>
+#include <cstdlib>
+
+using namespace std;
+
+//проверка является ли переданная строка целым числом
+bool IsNumber(const string& str) 
+{
+    if (str.empty()) return false;
+    int start = (str[0] == '-' || str[0] == '+') ? 1 : 0;
+    for (int i = start; i < str.length(); ++i) 
+    {
+        if (!isdigit(str[i])) return false;
+    }
+    return start < str.length();
+}
+
+// заполнение с клавиатуры 
+void console(deque<int>& D) 
+{
+    int n;
+    string n1;
+    cout << " Введите количество элементов (четное число): ";
+    cin >> n1;
+    if (!IsNumber(n1) || stoi(n1) % 2 != 0) 
+    { 
+        cout << " Недопустимое значение.";
+        exit(0);
+    }
+    n = stoi(n1);
+
+    cout << " Введите " << n << " элементов: ";
+    for (int i = 0; i < n; ++i) 
+    {
+        int num;
+        string num1;
+        cin >> num1;
+        if (!IsNumber(num1))
+        { 
+            cout << " Недопустимое значение.";
+            exit(0);
+        }
+        num = stoi(num1);
+        D.push_back(num); 
+    }
+    cout << endl;
+}
+
+// заполнение из файла 
+void file(deque<int>& D) 
+{
+    ifstream file("lab171.txt");
+    if (!file) 
+    {
+        cout << " Не удалось открыть файл!";
+        exit(0);
+    }
+
+    string n1, num1;
+    int n, num;
+    file >> n1;
+    if (!IsNumber(n1) || stoi(n1) % 2 != 0) 
+    {
+        cout << " Недопустимое значение.";
+        exit(0);
+    }
+    n = stoi(n1);
+
+    for (int i = 0; i < n; ++i) 
+    {
+        file >> num1;
+        if (!IsNumber(num1)) 
+        {
+            cout << " Недопустимое значение.";
+            exit(0);
+        }
+        num = stoi(num1);
+        D.push_back(num);
+    }
+}
+
+// заполнение случайными числами
+void random(deque<int>& D) 
+{
+    int n;
+    string n1;
+    srand(time(nullptr));
+
+    cout << " Введите количество элементов (четное число): ";
+    cin >> n1;
+    if (!IsNumber(n1) || stoi(n1) % 2 != 0)
+    {
+        cout << " Недопустимое значение.";
+        exit(0);
+    }
+    n = stoi(n1);
+
+    for (int i = 0; i < n; ++i) 
+    {
+        D.push_back(rand() % 100);
+    }
+}
+
+//вывод
+void printProcessed(const deque<int>& D) 
+{
+    size_t half = D.size() / 2;
+
+    cout << " Первая половина (в обратном порядке): ";
+    for (deque<int>::const_reverse_iterator it = D.rbegin() + half; it != D.rend(); ++it) 
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    cout << " Вторая половина (в обратном порядке): ";
+    for (deque<int>::const_reverse_iterator it = D.rbegin(); it != D.rbegin() + half; ++it) 
+    
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+
+int main() 
+{
+    setlocale(LC_ALL, "ru");
+
+    deque<int> D;
+    cout << " Выберите способ заполнения дека: " << endl;
+    cout << " 1. Заполнение случайными числами." << endl;
+    cout << " 2. Заполнение вручную." << endl;
+    cout << " 3. Заполнение из файла." << endl;
+
+    int choice;
+    cout << " ";
+    cin >> choice;
+
+    switch (choice) 
+    {
+    case 1:
+        random(D);
+        break;
+    case 2:
+        console(D);
+        break;
+    case 3:
+        file(D);
+        break;
+    default:
+        cout << " Недопустимое значение.";
+        return 0;
+    }
+
+    cout << endl;
+
+    cout << " Исходный дек: ";
+    for (deque<int>::iterator it = D.begin(); it != D.end(); ++it) 
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    printProcessed(D);
+
+    return 0;
+}
