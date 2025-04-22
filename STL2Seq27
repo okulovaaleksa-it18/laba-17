@@ -1,0 +1,186 @@
+// STL2Seq27. Дан вектор V. 
+// Удалить все элементы исходного вектора с нечетными порядковыми номерами
+// (считая, что начальный элемент вектора имеет порядковый номер 1).
+// Использовать функцию erase в цикле с параметром-итератором.
+ 
+// erase -  функция удаления элементов в контейнерах
+ 
+#include <iostream>
+#include <vector>
+#include <iterator>
+#include <fstream>
+#include <string>
+#include <ctime>
+#include <cstdlib>
+
+using namespace std;
+
+//проверка является ли переданая строка целым числом
+bool IsNumber(const string& str) 
+{
+    if (str.empty()) return false;
+    int start = (str[0] == '-' || str[0] == '+') ? 1 : 0;
+    for (int i = start; i < str.length(); ++i) 
+    {
+        if (!isdigit(str[i])) return false;
+    }
+    return start < str.length();
+}
+
+//заполнение с клавиатуры
+void console(vector<int>& V) 
+{
+    int n;
+    string n1;
+    cout << " Введите количество элементов вектора: ";
+    cin >> n1;
+    if (!IsNumber(n1) || stoi(n1) <= 0) 
+    {
+        cout << " Недопустимое значение.";
+        exit(0);
+    }
+    n = stoi(n1);
+
+    cout << " Введите " << n << " элементов: ";
+    for (int i = 0; i < n; ++i) 
+    {
+        int num;
+        string num1;
+        cin >> num1;
+        if (!IsNumber(num1)) 
+        {
+            cout << " Недопустимое значение.";
+            exit(0);
+        }
+        num = stoi(num1);
+        V.push_back(num);
+    }
+    cout << endl;
+}
+
+//заполнение из файла
+void file(vector<int>& V) 
+{
+    ifstream file("lab171.txt");
+    if (!file) 
+    {
+        cout << " Не удалось открыть файл!";
+        exit(0);
+    }
+
+    string n1, num1;
+    int n, num;
+    file >> n1;
+    if (!IsNumber(n1) || stoi(n1) <= 0) 
+    { 
+        cout << " Недопустимое значение.";
+        exit(0);
+    }
+    n = stoi(n1);
+
+    for (int i = 0; i < n; ++i) 
+    {
+        file >> num1;
+        if (!IsNumber(num1)) 
+        { 
+            cout << " Недопустимое значение.";
+            exit(0);
+        }
+        num = stoi(num1);
+        V.push_back(num);
+    }
+}
+
+//заполнение случайными числами
+void random(vector<int>& V) 
+{
+    int n;
+    string n1;
+    srand(time(nullptr));
+
+    cout << " Введите количество элементов вектора: ";
+    cin >> n1;
+    if (!IsNumber(n1) || stoi(n1) <= 0) 
+    {
+        cout << " Недопустимое значение.";
+        exit(0);
+    }
+    n = stoi(n1);
+
+    for (int i = 0; i < n; ++i) 
+    {
+        V.push_back(rand() % 100);
+    }
+}
+
+// удаляет элементы с нечетными порядковыми номерами
+void removeOddIndices(vector<int>& V) 
+{
+    int pos = 1;
+    for (vector<int>::iterator i = V.begin(); i != V.end(); ) 
+    {
+        if (pos % 2 != 0) 
+        {
+            i = V.erase(i);
+        }
+        else 
+        {
+            ++i;
+        }
+        ++pos;
+        if (i == V.end()) break;
+    }
+}
+
+void printVector(const vector<int>& V) 
+{
+    cout << " Вектор: ";
+    for (vector<int>::const_iterator it = V.begin(); it != V.end(); ++it) 
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+
+int main() 
+{
+    setlocale(LC_ALL, "ru");
+
+    vector<int> V;
+    cout << " Выберите способ заполнения вектора: " << endl;
+    cout << " 1. Заполнение случайными числами." << endl;
+    cout << " 2. Заполнение вручную." << endl;
+    cout << " 3. Заполнение из файла." << endl;
+
+    int choice;
+    cout << " ";
+    cin >> choice;
+
+    switch (choice) 
+    {
+    case 1:
+        random(V);
+        break;
+    case 2:
+        console(V);
+        break;
+    case 3:
+        file(V);
+        break;
+    default:
+        cout << " Недопустимое значение.";
+        return 0;
+    }
+
+    cout << endl;
+
+    cout << " Исходный вектор: ";
+    printVector(V);
+
+    removeOddIndices(V);
+
+    cout << " Вектор после удаления элементов с нечетными порядковыми номерами: ";
+    printVector(V);
+
+    return 0;
+}
